@@ -5,7 +5,7 @@
 ### Have a question?
 
 * For any code challange-related questions reach out to your Reach recruiting contact
-* Documentation for playwright can be found [here](https://playwright.dev/docs)
+* Documentation for playwright can be found [here](https://playwright.dev/docs/intro)
 
 ---
 ### How do I get set up?
