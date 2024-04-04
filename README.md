@@ -10,7 +10,7 @@
 ---
 ### How do I get set up?
 
-1.  Fork this repository
+1.  **Fork this repository** before continuing.
 2.  Install node/npm on your machine if you haven't already
 3.  npm install required packages for the repo 
 4.  Test scripts can be found in package.json. Feel free to modify these if you need to.
@@ -18,8 +18,8 @@
 ### Code Challenge Instructions
 
 1. The only requirement is that you complete the test cases listed below using Playwright. Design patterns, folder structure are up to you.
-2. Commit frequently.
-3. When you're done, create a pull request within your forked repository, and share the link to the PR with Lindsay Helmus.
+2. Commit frequently so we can see your approach to solving this code challenge.
+3. When you're done, create a pull request **within your forked repository**, and share the link to the PR with Lindsay Helmus.
 ---
 ### Test Cases
 
