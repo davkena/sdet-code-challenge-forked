@@ -71,21 +71,24 @@ test.describe('Create New Todo', () => {
 
   test('should delete a todo item', async ({ page }) => {
     // Add a new todo item
-    await page.locator('input.new-todo').fill('Todo to be deleted');
-    await page.locator('input.new-todo').press('Enter');
+    const todoToDelete = 'Todo to be deleted';
+    await todoPage.addTodoItem(todoToDelete);
 
-    // Ensure the todo is added
-    await expect(page.locator('label[data-testid="todo-title"]')).toHaveText('Todo to be deleted');
+    // Verify the new todo item was added successfully
+    const isPresentBeforeDelete = await todoPage.isTodoItemPresent(todoToDelete);
+    expect(isPresentBeforeDelete).toBe(true);
 
-    // Hover over the todo item to make the delete button visible, then click it
-    await page.locator('li[data-testid="todo-item"]').hover();
-    await page.locator('button.destroy').click();
+    // Delete the todo item and hover over the item to show the delete button
+    const todoItemLocator = todoPage.todoList.locator(`text="${todoToDelete}"`);
+    await todoItemLocator.hover();
+    await todoPage.page.locator('button.destroy').click();
 
     // Verify the todo item is removed from the page
-    await expect(page.locator('ul.todo-list').locator('text="Todo to be deleted"')).toHaveCount(0);
+    const isPresentAfterDelete = await todoPage.isTodoItemPresent(todoToDelete);
+    expect(isPresentAfterDelete).toBe(false);
 
     // Ensure the todo is removed from local storage
-    await checkTodoNotInLocalStorage(page, 'Todo to be deleted');
+    await checkTodoNotInLocalStorage(page, todoToDelete);
   });
 
   test('todo item is marked as completed', async ({ page }) => {
