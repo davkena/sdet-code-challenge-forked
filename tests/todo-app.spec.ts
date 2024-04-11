@@ -122,4 +122,19 @@ test.describe('Create New Todo', () => {
 
   });
   
+  test('active list shows only active todo items', async ({ page }) => {
+    // Add a new todo item
+    await page.locator('input.new-todo').fill('Todo to be completed');
+    await page.locator('input.new-todo').press('Enter');
+  
+    // Mark the todo item as completed
+    await page.locator('input.toggle').first().click();
+  
+    // Navigate to the Active list
+    await page.locator('a[href="#/active"]').click();
+  
+    // Verify that the completed todo item is not present
+    await expect(page.locator('label[data-testid="todo-title"]:has-text("Todo to be completed")')).not.toBeVisible();
+  });
+  
 });
