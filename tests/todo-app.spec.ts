@@ -36,4 +36,26 @@ test.describe('Create New Todo', () => {
 
     await checkNumberOfTodosInLocalStorage(page, 2);
   });
+  
+  test('new todo item should appear last on the list', async ({ page }) => {
+    // create a new todo locator
+    const newTodo = page.locator('input.new-todo');
+
+    // Assuming TODO_ITEMS contains items you want to add before the test case
+    for (const item of TODO_ITEMS) {
+      await newTodo.fill(item);
+      await newTodo.press('Enter');
+    }
+
+    // Add a new todo item
+    const newTodoItem = 'check the new todo item appears last';
+    await newTodo.fill(newTodoItem);
+    await newTodo.press('Enter');
+
+    // Retrieve all todo items displayed on the page
+    const todoItems = await page.locator('label[data-testid="todo-title"]').allInnerTexts();
+
+    // Check if the last todo item in the list is the new todo item
+    await expect(todoItems.at(-1)).toBe(newTodoItem);
+  });
 });
