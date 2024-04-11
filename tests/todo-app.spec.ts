@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { checkNumberOfCompletedTodosInLocalStorage, checkNumberOfTodosInLocalStorage, checkTodosInLocalStorage } from '../src/todo-app'
+import { checkNumberOfCompletedTodosInLocalStorage, checkNumberOfTodosInLocalStorage, checkTodosInLocalStorage, checkTodoNotInLocalStorage } from '../src/todo-app'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
@@ -78,4 +78,23 @@ test.describe('Create New Todo', () => {
     await checkTodosInLocalStorage(page, 'Updated Todo');
   });
 
+  test('should delete a todo item', async ({ page }) => {
+    // Add a new todo item
+    await page.locator('input.new-todo').fill('Todo to be deleted');
+    await page.locator('input.new-todo').press('Enter');
+  
+    // Ensure the todo is added
+    await expect(page.locator('label[data-testid="todo-title"]')).toHaveText('Todo to be deleted');
+  
+    // Hover over the todo item to make the delete button visible, then click it
+    await page.locator('li[data-testid="todo-item"]').hover();
+    await page.locator('button.destroy').click();
+  
+    // Verify the todo item is removed from the page
+    await expect(page.locator('ul.todo-list').locator('text="Todo to be deleted"')).toHaveCount(0);
+
+    // Ensure the todo is removed from local storage
+    await checkTodoNotInLocalStorage(page, 'Todo to be deleted');
+  });
+  
 });

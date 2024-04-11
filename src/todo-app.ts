@@ -1,7 +1,6 @@
 import { Page } from "playwright";
 
 
-
 export async function checkNumberOfTodosInLocalStorage(page: Page, expected: number) {
 return await page.waitForFunction(e => {
     return JSON.parse(localStorage['react-todos']).length === e;
@@ -19,3 +18,11 @@ return await page.waitForFunction(t => {
     return JSON.parse(localStorage['react-todos']).map((todo: any) => todo.title).includes(t);
 }, title);
 }
+
+export async function checkTodoNotInLocalStorage(page: Page, title: string) {
+    return await page.waitForFunction((t) => {
+      const todos = JSON.parse(localStorage.getItem('react-todos') || '[]');
+      return !todos.some((todo: any) => todo.title === t);
+    }, title);
+  }
+  
