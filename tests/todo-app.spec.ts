@@ -5,6 +5,7 @@ import { TodoPage } from './pages/todoPage';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
+  todoPage = new TodoPage(page);
 });
 
 let todoPage: TodoPage;
@@ -15,9 +16,6 @@ const TODO_ITEMS = [
 
 test.describe('Create New Todo', () => {
   test('should be able to create new items on the page', async ({ page }) => {
-    // Initialize a TodoPage object with the current page context
-    todoPage = new TodoPage(page);
-
     // Create the first todo item 
     await todoPage.addTodoItem(TODO_ITEMS[0]);
 
@@ -58,21 +56,20 @@ test.describe('Create New Todo', () => {
   });
 
   test('edit a todo item and verify it updates', async ({ page }) => {
-    // Create a new todo item.
-    await page.locator('input.new-todo').fill('Original Todo');
-    await page.locator('input.new-todo').press('Enter');
+    // Create a new todo item
+    await todoPage.addTodoItem('Original Todo');
+
+    // Verify that the todo item exists in local storage
     await checkTodosInLocalStorage(page, 'Original Todo');
 
-    // Edit the first todo item.
-    await page.dblclick('li[data-testid="todo-item"]:first-child');
-    // Fill the edit field with the new text and press Enter to save.
-    await page.locator('input.edit:visible').fill('Updated Todo');
-    await page.locator('input.edit:visible').press('Enter');
+    // Edit the first todo item
+    await todoPage.editFirstTodoItem('Updated Todo');
 
-    // Check the todo item is updated.
-    await expect(page.locator('label[data-testid="todo-title"]').first()).toHaveText('Updated Todo');
+    // Check if the todo item is updated on the page
+    const firstItemText = await todoPage.todoItems.first().innerText();
+    expect(firstItemText).toBe('Updated Todo');
 
-    // Check the updated todo item is in local storage.
+    // Check if the updated todo item is present in local storage
     await checkTodosInLocalStorage(page, 'Updated Todo');
   });
 
