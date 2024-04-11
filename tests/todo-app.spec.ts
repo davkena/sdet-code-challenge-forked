@@ -92,28 +92,26 @@ test.describe('Create New Todo', () => {
   });
 
   test('todo item is marked as completed', async ({ page }) => {
-    // Add a new todo item
-    await page.locator('input.new-todo').fill('Complete me');
-    await page.locator('input.new-todo').press('Enter');
+    
+    const todoText = 'Complete me';
 
-    //  Mark the todo item as completed
-    await page.locator('input.toggle').click();
+    // Add a new todo item
+    await todoPage.addTodoItem(todoText);
+
+    // Mark the todo item as completed
+    await todoPage.toggleCompletionOfTodoItem();
 
     // Verify it is completed
-    await expect(page.locator('li[data-testid="todo-item"].completed')).toHaveCount(1);
+    expect(await todoPage.isTodoItemCompleted(0)).toBe(true);
 
-    // Verify it is marked with a green check mark
-    await expect(page.locator('label[data-testid="todo-title"]')).toHaveCSS('background-image', /data:image\/svg\+xml/);
-
-    //Verify it is crossed off
-    await expect(page.locator('label[data-testid="todo-title"]')).toHaveCSS('text-decoration-line', 'line-through');
+    // Verify it is marked with a green check mark and crossed off
+    expect(await todoPage.isTodoItemMarkedAsCompleted(0)).toBe(true);
 
     // Verify the todo item is marked as completed in local storage
-    await checkTodoCompletedInLocalStorage(page, 'Complete me');
+    await checkTodoCompletedInLocalStorage(page, todoText);
 
     // Verify the number of completed todos in local storage
     await checkNumberOfCompletedTodosInLocalStorage(page, 1);
-
   });
 
   test('active list shows only active todo items', async ({ page }) => {
