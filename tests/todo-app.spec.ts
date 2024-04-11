@@ -26,8 +26,7 @@ test.describe('Create New Todo', () => {
     await todoPage.addTodoItem(TODO_ITEMS[1]);
 
     // Retrieve and check all current todo items to ensure both are present
-    const todosTexts = await todoPage.todoItems.allInnerTexts();
-    expect(todosTexts).toEqual(TODO_ITEMS);
+    expect(await todoPage.todoItems.allInnerTexts()).toEqual(TODO_ITEMS);
 
     // Check the number of todos in local storage matches expected
     await checkNumberOfTodosInLocalStorage(page, 2);
@@ -62,8 +61,7 @@ test.describe('Create New Todo', () => {
     await todoPage.editFirstTodoItem('Updated Todo');
 
     // Check if the todo item is updated on the page
-    const firstItemText = await todoPage.todoItems.first().innerText();
-    expect(firstItemText).toBe('Updated Todo');
+    expect(await todoPage.todoItems.first().innerText()).toBe('Updated Todo');
 
     // Check if the updated todo item is present in local storage
     await checkTodosInLocalStorage(page, 'Updated Todo');
@@ -75,12 +73,10 @@ test.describe('Create New Todo', () => {
     await todoPage.addTodoItem(todoToDelete);
 
     // Verify the new todo item was added successfully
-    const isPresentBeforeDelete = await todoPage.isTodoItemPresent(todoToDelete);
-    expect(isPresentBeforeDelete).toBe(true);
+    expect(await todoPage.isTodoItemPresent(todoToDelete)).toBe(true);
 
     // Delete the todo item and hover over the item to show the delete button
-    const todoItemLocator = todoPage.todoList.locator(`text="${todoToDelete}"`);
-    await todoItemLocator.hover();
+    await todoPage.todoList.locator(`text="${todoToDelete}"`).hover();
     await todoPage.page.locator('button.destroy').click();
 
     // Verify the todo item is removed from the page
@@ -92,7 +88,7 @@ test.describe('Create New Todo', () => {
   });
 
   test('todo item is marked as completed', async ({ page }) => {
-    
+
     const todoText = 'Complete me';
     // Add a new todo item
     await todoPage.addTodoItem(todoText);
@@ -129,7 +125,7 @@ test.describe('Create New Todo', () => {
     // Verify that the completed todo item is not present
     expect(await todoPage.isTodoItemPresent(todoItemText)).toBe(false);
     expect(await todoPage.isTodoItemPresent(todoItemText2)).toBe(true);
-    });
+  });
 
   test('completed todo item is removed when clearing completed', async ({ page }) => {
     // Add a new todo item
