@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { checkNumberOfCompletedTodosInLocalStorage, checkNumberOfTodosInLocalStorage, checkTodosInLocalStorage, checkTodoNotInLocalStorage } from '../src/todo-app'
+import { checkNumberOfCompletedTodosInLocalStorage, checkNumberOfTodosInLocalStorage, checkTodosInLocalStorage, checkTodoNotInLocalStorage, checkTodoCompletedInLocalStorage } from '../src/todo-app'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
@@ -95,6 +95,31 @@ test.describe('Create New Todo', () => {
 
     // Ensure the todo is removed from local storage
     await checkTodoNotInLocalStorage(page, 'Todo to be deleted');
+  });
+  
+  test('todo item is marked as completed', async ({ page }) => {
+    // Add a new todo item
+    await page.locator('input.new-todo').fill('Complete me');
+    await page.locator('input.new-todo').press('Enter');
+  
+    //  Mark the todo item as completed
+    await page.locator('input.toggle').click();
+  
+    // Verify it is completed
+    await expect(page.locator('li[data-testid="todo-item"].completed')).toHaveCount(1);
+
+    // Verify it is marked with a green check mark
+    await expect(page.locator('label[data-testid="todo-title"]')).toHaveCSS('background-image', /data:image\/svg\+xml/);
+    
+    //Verify it is crossed off
+    await expect(page.locator('label[data-testid="todo-title"]')).toHaveCSS('text-decoration-line', 'line-through');
+
+    // Verify the todo item is marked as completed in local storage
+    await checkTodoCompletedInLocalStorage(page, 'Complete me');
+
+    // Verify the number of completed todos in local storage
+    await checkNumberOfCompletedTodosInLocalStorage(page, 1);
+
   });
   
 });
