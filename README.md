@@ -23,10 +23,10 @@
 ---
 ### Test Cases
 
-The app you’ll be testing is the example React todomvc app located here – https://todomvc.com/examples/react/#/ 
+The app you’ll be testing is the example React todomvc app located [here](https://todomvc.com/examples/react/dist/) 
 
 #### Scenario
-As a user of the [React todomvc](https://todomvc.com/examples/react/#/) app, I want to be able to add, delete and mark todo items as complete
+As a user of the [React todomvc](https://todomvc.com/examples/react/dist/) app, I want to be able to add, delete and mark todo items as complete
 
 #### Test case #1 
 
