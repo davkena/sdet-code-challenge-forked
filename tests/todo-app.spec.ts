@@ -4,8 +4,8 @@ import { TodoPage } from './pages/todoPage';
 
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('https://demo.playwright.dev/todomvc');
   todoPage = new TodoPage(page);
+  await todoPage.goto();
 });
 
 let todoPage: TodoPage;
@@ -94,7 +94,6 @@ test.describe('Create New Todo', () => {
   test('todo item is marked as completed', async ({ page }) => {
     
     const todoText = 'Complete me';
-
     // Add a new todo item
     await todoPage.addTodoItem(todoText);
 
@@ -115,39 +114,45 @@ test.describe('Create New Todo', () => {
   });
 
   test('active list shows only active todo items', async ({ page }) => {
+    const todoItemText = 'Todo to be completed';
+    const todoItemText2 = 'Todo not to be completed';
     // Add a new todo item
-    await page.locator('input.new-todo').fill('Todo to be completed');
-    await page.locator('input.new-todo').press('Enter');
+    await todoPage.addTodoItem(todoItemText);
+    await todoPage.addTodoItem(todoItemText2);
 
-    // Mark the todo item as completed
-    await page.locator('input.toggle').first().click();
+    // Mark the new todo item as completed
+    await todoPage.toggleCompletionOfTodoItem();
 
     // Navigate to the Active list
-    await page.locator('a[href="#/active"]').click();
+    await todoPage.navigateToActiveList();
 
     // Verify that the completed todo item is not present
-    await expect(page.locator('label[data-testid="todo-title"]:has-text("Todo to be completed")')).not.toBeVisible();
-  });
+    expect(await todoPage.isTodoItemPresent(todoItemText)).toBe(false);
+    expect(await todoPage.isTodoItemPresent(todoItemText2)).toBe(true);
+    });
 
   test('completed todo item is removed when clearing completed', async ({ page }) => {
-    // Add and complete a todo item
-    await page.locator('input.new-todo').fill('Complete and clear me');
-    await page.locator('input.new-todo').press('Enter');
-    await page.locator('input.toggle').click();
+    // Add a new todo item
+    const todoText = 'Complete and clear me';
+    await todoPage.addTodoItem(todoText);
 
-    // Click “Clear Completed”
-    await page.locator('button', { hasText: 'Clear completed' }).click();
+    // Mark the new todo item as completed
+    await todoPage.toggleCompletionOfTodoItem(); // Assuming it's the first/only item
+
+    // Clear all completed todo items
+    await todoPage.clearCompletedTodos();
 
     // Verify the completed item is removed from the list
-    await expect(page.locator('text="Complete and clear me"')).toHaveCount(0);
+    expect(await todoPage.isTodoItemPresent(todoText)).toBe(false);
 
-    // Verify the item count in local storage decreases
+    // Verify the item count in local storage is decreased
     await checkNumberOfTodosInLocalStorage(page, 0);
 
-    //And the todo item is moved to the Completed list
-    // this part is commented out because the item is removed from the list and not moved to the Completed list in the app
-    // await page.locator('a[href="#/completed"]').click();
-    // await expect(page.locator('text="Complete and clear me"')).toBeVisible();
+    /* 
+    // The part about moving the item to the Completed list is commented out, as the item is removed, not moved
+    // This is consistent with the app's behavior and the original test expectations
+     await page.locator('a[href="#/completed"]').click();
+     await expect(page.locator('text="Complete and clear me"')).toBeVisible();
+     */
   });
-
 });

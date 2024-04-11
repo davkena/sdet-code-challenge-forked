@@ -15,6 +15,10 @@ export class TodoPage {
     this.clearCompletedButton = page.locator('button', { hasText: 'Clear completed' });
   }
 
+  async goto() {
+    await this.page.goto('https://demo.playwright.dev/todomvc');
+  }
+
   async addTodoItem(todoText: string): Promise<void> {
     await this.newTodoInput.fill(todoText);
     await this.newTodoInput.press('Enter');
@@ -57,19 +61,16 @@ export class TodoPage {
     const hasCompletedClass = await this.page.locator(`li[data-testid="todo-item"]`).nth(itemIndex).getAttribute('class');
     return hasCompletedClass?.includes('completed') ?? false;
   }
-  
+
   async isTodoItemMarkedAsCompleted(itemIndex: number = 0): Promise<boolean> {
-    // Directly access the label within the specified todo item
     const labelLocator = this.page.locator(`li[data-testid="todo-item"]:nth-of-type(${itemIndex + 1}) label[data-testid="todo-title"]`);
 
-    // Collect CSS properties 
     const isMarkedCompleted = await labelLocator.evaluate(node => {
-        const style = window.getComputedStyle(node);
-        return style.backgroundImage.includes('data:image/svg+xml') && style.textDecorationLine.includes('line-through');
+      const style = window.getComputedStyle(node);
+      return style.backgroundImage.includes('data:image/svg+xml') && style.textDecorationLine.includes('line-through');
     });
 
     return isMarkedCompleted;
-}
-
+  }
 
 }
