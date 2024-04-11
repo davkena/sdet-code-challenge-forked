@@ -34,25 +34,21 @@ test.describe('Create New Todo', () => {
   });
 
   test('new todo item should appear last on the list', async ({ page }) => {
-    // create a new todo locator
-    const newTodo = page.locator('input.new-todo');
-
-    // Assuming TODO_ITEMS contains items you want to add before the test case
+    // Add predefined todo items to the list
     for (const item of TODO_ITEMS) {
-      await newTodo.fill(item);
-      await newTodo.press('Enter');
+      await todoPage.addTodoItem(item);
     }
 
-    // Add a new todo item
+    // Add a new todo item 
     const newTodoItem = 'check the new todo item appears last';
-    await newTodo.fill(newTodoItem);
-    await newTodo.press('Enter');
+    // Add the new todo item using TodoPage class method
+    await todoPage.addTodoItem(newTodoItem);
 
-    // Retrieve all todo items displayed on the page
-    const todoItems = await page.locator('label[data-testid="todo-title"]').allInnerTexts();
+    // Retrieve the new todo item
+    const todoItemsTexts = await todoPage.todoItems.allInnerTexts();
 
-    // Check if the last todo item in the list is the new todo item
-    await expect(todoItems.at(-1)).toBe(newTodoItem);
+    // Check if the last todo item in the list matches the newly added item
+    expect(todoItemsTexts.at(-1)).toBe(newTodoItem);
   });
 
   test('edit a todo item and verify it updates', async ({ page }) => {
