@@ -36,7 +36,7 @@ test.describe('Create New Todo', () => {
 
     await checkNumberOfTodosInLocalStorage(page, 2);
   });
-  
+
   test('new todo item should appear last on the list', async ({ page }) => {
     // create a new todo locator
     const newTodo = page.locator('input.new-todo');
@@ -58,4 +58,24 @@ test.describe('Create New Todo', () => {
     // Check if the last todo item in the list is the new todo item
     await expect(todoItems.at(-1)).toBe(newTodoItem);
   });
+
+  test('edit a todo item and verify it updates', async ({ page }) => {
+    // Create a new todo item.
+    await page.locator('input.new-todo').fill('Original Todo');
+    await page.locator('input.new-todo').press('Enter');
+    await checkTodosInLocalStorage(page, 'Original Todo');
+
+    // Edit the first todo item.
+    await page.dblclick('li[data-testid="todo-item"]:first-child');
+    // Fill the edit field with the new text and press Enter to save.
+    await page.locator('input.edit:visible').fill('Updated Todo');
+    await page.locator('input.edit:visible').press('Enter');
+
+    // Check the todo item is updated.
+    await expect(page.locator('label[data-testid="todo-title"]').first()).toHaveText('Updated Todo');
+
+    // Check the updated todo item is in local storage.
+    await checkTodosInLocalStorage(page, 'Updated Todo');
+  });
+
 });
