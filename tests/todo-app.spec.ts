@@ -137,4 +137,25 @@ test.describe('Create New Todo', () => {
     await expect(page.locator('label[data-testid="todo-title"]:has-text("Todo to be completed")')).not.toBeVisible();
   });
   
+  test('completed todo item is removed when clearing completed', async ({ page }) => {
+    // Add and complete a todo item
+    await page.locator('input.new-todo').fill('Complete and clear me');
+    await page.locator('input.new-todo').press('Enter');
+    await page.locator('input.toggle').click();
+  
+    // Click “Clear Completed”
+    await page.locator('button', { hasText: 'Clear completed' }).click();
+  
+    // Verify the completed item is removed from the list
+    await expect(page.locator('text="Complete and clear me"')).toHaveCount(0);
+  
+    // Verify the item count in local storage decreases
+    await checkNumberOfTodosInLocalStorage(page, 0);
+
+    //And the todo item is moved to the Completed list
+    // this part is commented out because the item is removed from the list and not moved to the Completed list in the app
+    // await page.locator('a[href="#/completed"]').click();
+    // await expect(page.locator('text="Complete and clear me"')).toBeVisible();
+  });
+  
 });
