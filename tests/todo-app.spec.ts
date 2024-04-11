@@ -1,10 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 import { checkNumberOfCompletedTodosInLocalStorage, checkNumberOfTodosInLocalStorage, checkTodosInLocalStorage, checkTodoNotInLocalStorage, checkTodoCompletedInLocalStorage } from '../src/todo-app'
+import { TodoPage } from './pages/todoPage';
+
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
 });
 
+let todoPage: TodoPage;
 const TODO_ITEMS = [
   'complete code challenge for reach',
   'ensure coverage for all items is automated'
@@ -12,28 +15,23 @@ const TODO_ITEMS = [
 
 test.describe('Create New Todo', () => {
   test('should be able to create new items on the page', async ({ page }) => {
-    // create a new todo locator
-    const newTodo = page.getByPlaceholder('What needs to be done?');
+    // Initialize a TodoPage object with the current page context
+    todoPage = new TodoPage(page);
 
-    // Create 1st todo.
-    await newTodo.fill(TODO_ITEMS[0]);
-    await newTodo.press('Enter');
+    // Create the first todo item 
+    await todoPage.addTodoItem(TODO_ITEMS[0]);
 
-    // Make sure the list only has one todo item.
-    await expect(page.getByTestId('todo-title')).toHaveText([
-      TODO_ITEMS[0]
-    ]);
+    // Assert that the first item in the todo list matches the expected text
+    expect(await todoPage.getLastTodoItemText()).toBe(TODO_ITEMS[0]);
 
-    // Create 2nd todo.
-    await newTodo.fill(TODO_ITEMS[1]);
-    await newTodo.press('Enter');
+    // Create the second todo item 
+    await todoPage.addTodoItem(TODO_ITEMS[1]);
 
-    // Make sure the list now has two todo items.
-    await expect(page.getByTestId('todo-title')).toHaveText([
-      TODO_ITEMS[0],
-      TODO_ITEMS[1]
-    ]);
+    // Retrieve and check all current todo items to ensure both are present
+    const todosTexts = await todoPage.todoItems.allInnerTexts();
+    expect(todosTexts).toEqual(TODO_ITEMS);
 
+    // Check the number of todos in local storage matches expected
     await checkNumberOfTodosInLocalStorage(page, 2);
   });
 

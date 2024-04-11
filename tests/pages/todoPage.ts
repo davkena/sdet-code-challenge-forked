@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 
-export class todoPage {
+export class TodoPage {
   readonly page: Page;
   readonly newTodoInput: Locator;
   readonly todoList: Locator;
